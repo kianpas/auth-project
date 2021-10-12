@@ -27,11 +27,11 @@ const AuthForm = () => {
     if (isLogin) {
       //로그인시
       url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyApJiaopgRXEB0gfOlVp4SAnZsxA5pw5F8";
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
     } else {
       //회원가입
       url =
-        " https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyApJiaopgRXEB0gfOlVp4SAnZsxA5pw5F8";
+        " https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
     }
     try {
       //로그인, 회원가입 같음
