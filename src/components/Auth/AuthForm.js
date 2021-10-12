@@ -1,10 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
+import AuthContext from "../../store/auth-context";
 
 import classes from "./AuthForm.module.css";
 
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+
+  const authCtx = useContext(AuthContext);
 
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,32 +22,44 @@ const AuthForm = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
     setIsLoading(true);
+
+    let url;
     if (isLogin) {
+      //로그인시
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyApJiaopgRXEB0gfOlVp4SAnZsxA5pw5F8";
     } else {
-      const response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyApJiaopgRXEB0gfOlVp4SAnZsxA5pw5F8",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      //회원가입
+      url =
+        " https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyApJiaopgRXEB0gfOlVp4SAnZsxA5pw5F8";
+    }
+    try {
+      //로그인, 회원가입 같음
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          email: enteredEmail,
+          password: enteredPassword,
+          returnSecureToken: true,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
       const data = await response.json();
       setIsLoading(false);
 
       if (response.ok) {
+        authCtx.login(data.idToken);
       } else {
         //error message
+
         let errorMessage = "Authentication failed";
         if (data && data.error && data.error.message) {
           errorMessage = data.error.message;
         }
-        alert(errorMessage);
+        throw new Error(errorMessage);
       }
+    } catch (err) {
+      alert(err.message);
     }
   };
 
