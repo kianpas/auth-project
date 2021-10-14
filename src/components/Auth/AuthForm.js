@@ -1,9 +1,11 @@
 import { useState, useRef, useContext } from "react";
 import AuthContext from "../../store/auth-context";
+import { useHistory } from "react-router-dom";
 
 import classes from "./AuthForm.module.css";
 
 const AuthForm = () => {
+  const history = useHistory();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
@@ -48,7 +50,13 @@ const AuthForm = () => {
       setIsLoading(false);
 
       if (response.ok) {
-        authCtx.login(data.idToken);
+        //db의 값을 가져와서 밀리세컨드로 변경하고 사용
+        const expirationTime = new Date(
+          new Date().getTime() + +data.expiresIn * 1000
+        );
+        authCtx.login(data.idToken, expirationTime.toISOString());
+        //로그인 상공시 /로 초기화면 돌아감
+        history.replace("/");
       } else {
         //error message
 
